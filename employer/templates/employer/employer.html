@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=chrome">
+        <title>Employer</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% comment %} <link rel="stylesheet" href="{% static 'employer/css/main.css' %}"> {% endcomment %}
+        <link rel="stylesheet" href="{% static 'global/css/main.css' %}">
+        <link rel="stylesheet" href="{% static 'employer/css/main.css' %}">
+    </head>
+    <body>
+        <h1>{{ ge | upper }} </h1>
+        <a href=" {% url 'employer:add' %} "><button id='ajt'> Ajouter Employer </button></a> <br><br>
+        <table >
+            <tr>
+            <th> ID </th>
+            <th>NOM</th>
+            <th>PRENOM</th>
+            <th>EMAIL</th>
+            <th>ADRESSE</th>
+            <th>TELEPHONE</th>
+            <th>POSTE</th>
+            <th colspan='3'>ACTIONS</th>
+            </tr>
+            {% for empl in employer %}
+            <tr>
+                <td> {{ empl.id }} </td>
+                <td> {{ empl.name_employer }} </td>
+                <td> {{ empl.prenom_employer }} </td> 
+                <td> {{ empl.email_employer }} </td>
+                <td> {{ empl.adresse_employer }} </td>
+                <td> {{ empl.tel_employer }} </td>
+                <td> {{ empl.poste_employer }} </td>
+                <td> <a href="{% url 'employer:vue' empl.id %}"><button id='vu'> Voir </button></a></td>
+                <td><a href="{% url 'employer:edit' empl.id %}"> <button id='edit'> Modifier </button> </a></td>
+                <td><a href="{%  url 'employer:delete' empl.id %}"><button id='sup'>Supprimer</button></a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modification employer</title>
+    <link rel="stylesheet" href="{% static 'employer/css/edit.css' %}">
+</head>
+<body>
+    <h1>{{ title | upper }}</h1>
+    
+    
+    <form method="post" enctype="multipart/form-data">
+        <div class='paraStyle'>
+        <p>
+            {% csrf_token %} 
+        {{ form.as_p }}
+        </p>
+        <div>
+    <a href="{% url 'employer:employer' %}"> <button type='submit'>Valider</button></a>
+</body>
+</html>

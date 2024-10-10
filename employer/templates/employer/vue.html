@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=chrome">
+        <title>Vus d'employer</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href=" {% static 'employer/css/vu.css' %} ">
+    </head>
+    <body>
+        <h1> {{ empl | upper }} </h1>
+            <div class='img'> 
+                {% if employer.image_employer %}
+                <div class="imgage">
+                    <h4>Image</h4>
+                <img src="{{employer.image_employer.url}}" style=" height:300px; width:300px; " alt='belle photo'>
+            </div>
+                <div class="dip">
+                    <h4>Diplome</h4>
+                <img src="{{ employer.diplome_employer.url }}"    alt='belle photo' style="height:300px; width:300px; ">
+            </div> 
+                {% endif %} 
+                
+            </div>  
+            <div class='content'> 
+                <h2> NOM    :   </h2> <h3><u>{{ employer.name_employer }}</u> </h3>
+                <h2>PRENOM    : </h2><h3><u>{{ employer.prenom_employer }}</u></h3>
+                <h2>DATE      : </h2><h3><u>{{ employer.date_naiss_employer | date:"F j, Y" }}</u></h3> 
+                <h2>EMAIL     : </h2><h3><u>{{ employer.email_employer }} </u></h3>
+                <h2>ADRESSE   : </h2><h3><u>{{ employer.adresse_employer }} </u></h3>
+                <h2>TELEPHONE : </h2><h3><u>{{ employer.tel_employer }} </u></h3>
+                <h2>POSTE     : </h2><h3><u>{{ employer.poste_employer }} </u></h3>
+                <h2>GENRE     : </h2><h3><u>{{ employer.genre_employer }} </u></h3>
+            </div>
+            <a href="{% url  'employer:employer' %}"><button>Retour</button><a>
+    </body>
+</html>
