@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, permission_required, 
 from django.contrib.auth.models import Group
 from notifications.signals import notify
 from notifications.models import Notification
+from django.http import JsonResponse
 
 # def index(request, *args):
 #      return render(request,'index.html')
@@ -22,9 +23,11 @@ def tableau(request, *args):
     
     # Récupérer les notifications non lues pour l'utilisateur
     notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
+    
     context = {
         # 'empl' : get_object_or_404(Employe, user=request.user),
         # 'employe': employe,
+    
         'notifications_unread': notifications_unread
     }
     
@@ -38,6 +41,7 @@ from accounts.models import User
 @login_required()
 def table(request, *args, **kwargs):
     is_manager = request.user.groups.filter(name='Manager_user').exists()
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
     if request.user.has_perm('employer.view_all_employes'):
         # Le manager voit tous les employés
         employe = Employe.objects.all()
@@ -47,12 +51,16 @@ def table(request, *args, **kwargs):
             employe = Employe.objects.filter(user=request.user)  
         except Employe.DoesNotExist:
             employe = None
-    return render(request, './pages/tables.html', {'employe': employe, 'is_manager' : is_manager })
+    return render(request, './pages/tables.html', {'employe': employe, 'is_manager' : is_manager, 'notifications_unread' : notifications_unread })
 
 
 @permission_required('employer.view_employe', raise_exception=True)
 def vuEmployer(request, employer_id, *args):
-    context= {'employe' : get_object_or_404(Employe, pk= employer_id)}
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
+    context= {
+        'employe' : get_object_or_404(Employe, pk= employer_id),
+        'notifications_unread' : notifications_unread
+        }
     return render(request, './pages/vueEmploye.html', context) 
 
 def vuPaiement(request, employer_id, *args):
@@ -95,6 +103,7 @@ def remove(request, employer_id, *args):
 def abscence(request, *args) :
     abscence = None
     is_manager = request.user.groups.filter(name='Manager_user').exists()
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
     if request.user.has_perm('employer.view_all_employes'):
         abscence = Abscence.objects.all()
     else:
@@ -103,7 +112,7 @@ def abscence(request, *args) :
             abscence = Abscence.objects.filter(employe=employe)
         except Abscence.DoesNotExist:
             abscence = None
-    return render(request, './pages/conge.html', {'title' : 'Gestion Conge', 'abscence': abscence, 'is_manager' : is_manager})
+    return render(request, './pages/conge.html', {'title' : 'Gestion Conge', 'abscence': abscence, 'is_manager' : is_manager, 'notifications_unread' :notifications_unread })
 
 
 def addConge(request, *args, **kwargs):
@@ -151,6 +160,7 @@ def addConge(request, *args, **kwargs):
 def paiement(request, *args):
     paiement = None
     is_manager = request.user.groups.filter(name='Manager_user').exists()
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
     if request.user.has_perm('employer.view_all_employes'):
         paiement = Paiement.objects.all()
     else:
@@ -159,7 +169,10 @@ def paiement(request, *args):
             paiement = Paiement.objects.filter(employe_id=employe)
         except Abscence.DoesNotExist:
             paiement = None
-    context = { 'paiement' : paiement, 'is_manager' : is_manager}
+    context = { 'paiement' : paiement,
+            'is_manager' : is_manager,
+            'notifications_unread' : notifications_unread
+            }
     return render(request, './pages/paiement.html', context)
 
 def addPaiement(request, *args):
@@ -269,95 +282,94 @@ def accepter_paiement(request, paiement_id):
 
     return redirect('employer:tableau')
 
+
 def notification_detail(request, notification_id):
+    # Récupérer l'employé associé à l'utilisateur
     employe = get_object_or_404(Employe, user=request.user)
 
-    # Vérifier si l'utilisateur fait partie du groupe Manager
+    # Vérifier si l'utilisateur est dans le groupe "Manager"
     is_manager = request.user.groups.filter(name='Manager_user').exists()
 
-    # Récupérer les demandes de congé en attente si l'utilisateur est un manager
+    # Si l'utilisateur est manager, récupérer les demandes de congé et de paiement en attente
     demandes_conge = Abscence.objects.filter(status='PENDING') if is_manager else None
     demandes_paiement = Paiement.objects.filter(status='PENDING') if is_manager else None
-    # Récupérer la notification par son ID
+
+    # Récupérer la notification
     notification = get_object_or_404(Notification, pk=notification_id)
-    
-    # Marquer la notification comme lue si elle ne l'est pas déjà
+
+    # Marquer la notification comme lue si elle est encore non lue
     if notification.unread:
         notification.mark_as_read()
-    
+
+    # Contexte à passer au template
     context = {
         'employe': employe,
-        'demandes_paiement' : demandes_paiement,
+        'demandes_paiement': demandes_paiement,
         'demandes_conge': demandes_conge,
         'notification': notification,
-        'is_manager': is_manager,  # Ajout de la variable is_manager au context
+        'is_manager': is_manager,  # Pour utiliser dans le template
     }
+
     # Afficher la page de détail de la notification
     return render(request, './pages/notifications_detail.html', context)
+# def notification_detail(request, notification_id):
+#     employe = get_object_or_404(Employe, user=request.user)
 
+#     # Vérifier si l'utilisateur fait partie du groupe Manager
+#     is_manager = request.user.groups.filter(name='Manager_user').exists()
 
-
-
-
-    # notification = get_object_or_404(Notification, id=notification_id)
+#     # Récupérer les demandes de congé en attente si l'utilisateur est un manager
+#     demandes_conge = Abscence.objects.filter(status='PENDING') if is_manager else None
+#     demandes_paiement = Paiement.objects.filter(status='PENDING') if is_manager else None
+#     # Récupérer la notification par son ID
+#     notification = get_object_or_404(Notification, pk=notification_id, recipient=request.user)
     
-    # # Vérifie si l'objet action associé à la notification est une demande de congé
-    # if notification.action_object and isinstance(notification.action_object, Abscence):
-    #     abscence = notification.action_object
-    #     abscence.status = 'APPROVED'
-    #     abscence.save()
-        
-    #     # Notifier l'utilisateur que sa demande a été approuvée
-    #     notify.send(
-    #         sender=request.user,  # Le manager
-    #         recipient=abscence.employe.user,  # L'utilisateur ayant soumis la demande
-    #         verb='Demande approuvée',
-    #         action_object=abscence,
-    #         description="Votre demande de congé a été approuvée."
-    #     )
-        
-    #     # Marque la notification initiale comme lue
-    #     notification.mark_as_read()
-        
-    #     messages.success(request, "La demande a été approuvée et l'utilisateur a été notifié.")
+#     # Marquer la notification comme lue si elle ne l'est pas déjà
+#     if notification.unread:
+#         notification.mark_as_read()
     
-    # return redirect('employer:tableau')
+#     context = {
+#         'employe': employe,
+#         'demandes_paiement' : demandes_paiement,
+#         'demandes_conge': demandes_conge,
+#         'notification': notification,
+#         'is_manager': is_manager,  # Ajout de la variable is_manager au context
+#     }
+#     # Afficher la page de détail de la notification
+#     return render(request, './pages/notifications_detail.html', context)
 
 
-# def rejeter_demande(request, conge_id):
-#     conge = get_object_or_404(Abscence, id=conge_id)
-#     conge.status = 'REJECTED'
-#     conge.save()
 
-#     # Notifier l'utilisateur
-#     notify.send(
-#         sender=request.user,
-#         recipient=conge.employe.user,
-#         verb='Demande de congé rejetée',
-#         description="Votre demande de congé du {} au {} a été rejetée.".format(conge.date_debut, conge.date_fin)
-#     )
+# request ajax and return jason
+# def get_counts(request):
+#     if request.is_ajax() and request.method == "GET":
+#         print("get_counts called")
 
-#     return redirect('employer:tableau')
-    # notification = get_object_or_404(Notification, id=notification_id)
-    
-    # # Vérifie si l'objet action associé à la notification est une demande de congé
-    # if notification.action_object and isinstance(notification.action_object, Abscence):
-    #     abscence = notification.action_object
-    #     abscence.status = 'REJECTED'
-    #     abscence.save()
-        
-    #     # Notifier l'utilisateur que sa demande a été rejetée
-    #     notify.send(
-    #         sender=request.user,  # Le manager
-    #         recipient=abscence.employe.user,  # L'utilisateur ayant soumis la demande
-    #         verb='Demande rejetée',
-    #         action_object=abscence,
-    #         description="Votre demande de congé a été rejetée."
-    #     )
-        
-    #     # Marque la notification initiale comme lue
-    #     notification.mark_as_read()
-        
-    #     messages.success(request, "La demande a été rejetée et l'utilisateur a été notifié.")
-    
-    # return redirect('employer:tableau')
+#         employe_count = Employe.objects.count()
+#         conge_count = Abscence.objects.filter(status='PENDING').count()
+#         paiement_count = Paiement.objects.filter(status='PENDING').count()
+
+#         data = {
+#             'employe_count': employe_count,
+#             'conge_count': conge_count,
+#             'paiement_count' : paiement_count,
+#         }
+#         return JsonResponse(data)
+def get_counts(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == "GET":
+        try:
+            employe_count = Employe.objects.count()
+            conge_count = Abscence.objects.filter(status='PENDING').count()
+            paiement_count = Paiement.objects.filter(status='PENDING').count()
+            user_count = User.objects.count()
+
+            data = {
+                'employe_count': employe_count,
+                'conge_count': conge_count,
+                'paiement_count': paiement_count,
+                'user_count' : user_count
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            print(f"Erreur dans get_counts: {e}")  # Cela affichera l'erreur dans la console
+            return JsonResponse({'error': 'Une erreur est survenue'}, status=500)
