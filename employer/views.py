@@ -10,6 +10,7 @@ from notifications.signals import notify
 from notifications.models import Notification
 from django.http import JsonResponse
 
+@login_required()
 def index(request, *args):
     notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
     return render(request,'index.html', {'notifications_unread' : notifications_unread} )
