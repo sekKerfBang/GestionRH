@@ -1,7 +1,43 @@
-{% extends 'base.html' %}
+{% extends 'pages/base.html' %}
 
-{% block content  %}
+{% load static %}
 
+{% load notifications_tags %}
+
+{% block title%} Dashboard{% endblock %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+
+#style 
+{% block css_style %}
+<style>
+    .fa-solid {
+        font-size: 26px;
+    }
+
+    .fa-solid[data-count]:after {
+        position: absolute;
+        right: 0%;
+        top: 1%;
+        content: attr(data-count);
+        font-size: 36%;
+        padding: .6em;
+        border-radius: 999px;
+        line-height: .75em;
+        color: white;
+        background: rgba(255, 0, 0, .85);
+        text-align: center;
+        min-width: 2em;
+        font-weight: bold;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
 
 <main class="main-content position-relative border-radius-lg ">
   <!-- Navbar -->
@@ -13,22 +49,283 @@
           <li class="breadcrumb-item text-sm text-white active" aria-current="page">Dashboard</li>
         </ol>
         <h6 class="font-weight-bolder text-white mb-0">Dashboard</h6>
+        
       </nav>
       <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
         <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-          <div class="input-group">
-            <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
+          {% for message in messages %}
+                  {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                      <p id='message-timer' class='alert alert-info float-center font-weight-bolder text-center text-white me-5' > {{ message }} </p>
+                  {% endif %}
+
+                {% endfor %}
+
+
+                <div class="dropdown-center">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title='Notification' >
+                      Notifications
+                      {% if notifications_unread %}
+                          <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
+                      {% endif %}
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    {% if notifications_unread %}
+                        {% for notification in notifications_unread %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
+                                    {{ notification.actor }} - {{ notification.verb }} 
+                                </a>
+                            </li> 
+                        {% endfor %}
+                    {% else %}
+                        <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
+                    {% endif %}
+                </ul>
+                      
+            
+              </div>
+              
+              
+          {% comment %} <div class="input-group">
+            <a class="nav-link" data-toggle="dropdown" href="{% url 'notifications:notifications_list' %}" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+              <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+            <span class="badge text-danger text-lg  ">0</span>
+            </svg>
+          </a>  {% endcomment %}
+            {% comment %} <a class="nav-link"  href="{% url 'notifications:all' %}" aria-expanded="false">    {% endcomment %}
+              {% comment %} {% if user.notifications.unread.exists %}
+              <button type='button' class='btn btn-primary text-white' data-bs-toggle="modal" data-bs-target="#staticBackdrop"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="notifications">Notification 
+                <span class="badge-notifications badge badge-pill badge-danger" style="float:right;margin-bottom:-3px;margin-top: -2px !important; margin-left:10px !important; font-size: 0.6rem;">
+                {% live_notify_badge %}
+                  </span>  </button>
+                  {% endif %} {% endcomment %}
+
+                  {% comment %} <div class="dropdown-center">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Notifications
+                        {% if notifications_unread %}
+                            <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% if notifications_unread %}
+                            {% for notification in notifications_unread %}
+                                <li>
+                                    <a class="dropdown-item" href="{{ notification.data.url }}">
+                                      {{ notification.actor }}  - {{ notification.verb }} - {{ notification.timestamp|date:"d/m/Y H:i" }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
+                        {% endif %}
+                    </ul>
+                </div> {% endcomment %}
+                
+              
+            {% comment %} </a>   {% endcomment %}
+            {% comment %} <-- ! Modal --> {% endcomment %}
+
+            {% comment %} <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Notifications</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+
+                    <ul class="live_notify_list">
+                      <li class='mark-as-read' data-id="{{ notification.id }}">
+                          <i class="fas fa-envelope"></i> {% live_notify_list %}
+                      </li>
+                  </ul>
+                  
+                  
+                  <button id="mark_all_read" class='btn btn-info'>Marquer tout comme lu</button>
+                  
+                  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                  {% register_notify_callbacks callbacks='fill_notification_badge,fill_notification_list' refresh_period=15 %}
+                  
+                  <script>
+                  $(document).ready(function() {
+                      $('#mark_all_read').click(function() {
+                          if (confirm("Êtes-vous sûr de vouloir marquer toutes les notifications comme lues ?")) {
+                              $.ajax({
+                                  url: '{% url "mark_all_as_read" %}',
+                                  type: 'POST',
+                                  data: {
+                                      csrfmiddlewaretoken: '{{ csrf_token }}'
+                                  },
+                                  success: function() {
+                                      $('.live_notify_badge').text('');
+                                      $('.live_notify_list').empty();
+                                  },
+                                  error: function() {
+                                      alert("Erreur lors de la mise à jour des notifications.");
+                                  }
+                              });
+                          }
+                      });
+                  
+                      $(document).on('click', '.mark-as-read', function(e) {
+                          e.preventDefault();
+                          var $this = $(this);
+                          var notification_id = $this.data('id');
+                          if (confirm("Êtes-vous sûr de vouloir marquer cette notification comme lue ?")) {
+                              $.ajax({
+                                  url: '/notifications/mark-as-read/' + notification_id + '/',
+                                  type: 'POST',
+                                  data: {
+                                      csrfmiddlewaretoken: '{{ csrf_token }}'
+                                  },
+                                  success: function() {
+                                      $this.closest('li').remove();
+                                      var badge = $('.live_notify_badge');
+                                      var count = parseInt(badge.text());
+                                      badge.text(count > 1 ? count - 1 : '');
+                                  },
+                                  error: function() {
+                                      alert("Erreur lors de la mise à jour de la notification.");
+                                  }
+                              });
+                          }
+                      });
+                  });
+                  </script>
+              
+            
+                  <h3>Traiter la demande de congé</h3>
+                  <p>Employé : {{ abscence.empoye}}</p>
+                  <p>Du : {{ abscence.date_debut }}</p>
+                  <p>Au : {{ abscence.date_fin }}</p>
+                  <p>Motif : {{ abscence.motif }}</p>
+                  <form method="post">
+                      {% csrf_token %}
+                      <button type="submit" name="action" value="approve" class='btn btn-success'>
+                          <i class="fas fa-check"></i> Approuver
+                      </button>
+                      <button type="submit" name="action" value="reject" class='btn btn-warning'>
+                          <i class="fas fa-times"></i> Rejeter
+                      </button>
+                  </form>
+              
+                  {% endcomment %}
+                </div>
+{% comment %}                 
+                      <ul class="live_notify_list">
+                        <li class='mark-as-read' data-id="{{ notification.id }}"  >  {% live_notify_list %} </li>
+                    </ul>
+
+                    <button id="mark_all_read" class='btn btn-info' >Marquer tout comme lu</button>
+
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    {% register_notify_callbacks callbacks='fill_notification_badge,fill_notification_list' refresh_period=15 %}
+                    
+                    <script>
+                    $(document).ready(function() {
+                        $('#mark_all_read').click(function() {
+                            $.ajax({
+                                url: '{% url "mark_all_as_read" %}',
+                                type: 'POST',
+                                data: {
+                                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                                },
+                                success: function() {
+                                    $('.live_notify_badge').text('');
+                                    $('.live_notify_list').empty();
+                                }
+                            });
+                        });
+                    
+                        $(document).on('click', '.mark-as-read', function(e) {
+                            e.preventDefault();
+                            var $this = $(this);
+                            var notification_id = $this.data('id');
+                            $.ajax({
+                                url: '/notifications/mark-as-read/' + notification_id + '/',
+                                type: 'POST',
+                                data: {
+                                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                                },
+                                success: function() {
+                                    $this.closest('li').remove();
+                                    var badge = $('.live_notify_badge');
+                                    var count = parseInt(badge.text());
+                                    if (!isNaN(count) && count > 1) {
+                                      badge.text(count - 1);
+                                  } else {
+                                      badge.text('');
+                                  }
+                                }
+                            });
+                        });
+                    });
+                    </script>
+                    <pre>{{ abscence }}</pre>
+                    {% if abscence %}
+                    
+                    <form method="post" >
+                      {% csrf_token %}
+    
+                      
+                    
+                      <button type="submit" name="action" value="approve" class='btn btn-success'>Approuver</button>
+                      <button type="submit" name="action" value="reject" class='btn btn-warning'>Rejeter</button>
+                  </form>
+                  {% else %}
+                  <p>Aucune demande de congé à traiter.</p>
+                  {% endif %}
+                  </div> {% endcomment %}
+                  {% comment %} <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+                  </div>
+                </div>
+              </div>
+            </div>  {% endcomment %}
+            {% comment %} <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
             <input type="text" class="form-control" placeholder="Type here...">
           </div>
-        </div>
-        <ul class="navbar-nav  justify-content-end">
-          <li class="nav-item d-flex align-items-center">
-            <a href="javascript:;" class="nav-link text-white font-weight-bold px-0">
-              <i class="fa fa-user me-sm-1"></i>
-              <span class="d-sm-inline d-none">Sign In</span>
-            </a>
-          </li>
-          <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+        </div> {% endcomment %}
+        {% comment %} {% notifications_unread %} {% endcomment %}
+        
+        {% comment %} {% notifications_unread as unread_count %}
+        {% if unread_count %}
+            You have <strong>{{ unread_count }}</strong> unread notifications.
+        {% endif %}
+
+        {% live_notify_list list_class="dropdown-menu" %}
+        {% register_notify_callbacks callbacks='fill_notification_badge,my_special_notification_callback' %}
+
+        {% live_notify_badge %} 
+        {% live_notify_badge badge_class="badge" %}
+        {% endcomment %}
+        
+        {% comment %} <ul class="navbar-nav  justify-content-end">
+          <div  class = "d-flex dropstart" > 
+            <div  class = "réduire la barre de navigation-réduire"  id = "navbarNavDarkDropdown" > 
+              <ul  class = "navbar-nav" > 
+                <li  class = "nav-item liste déroulante menu déroulant-démarrage" > 
+                  <a  class = "nav-link "  href = "#"   data-bs-toggle = "liste déroulante"  aria-expanded = "false" > 
+                    <i  id = "bellCount"  class = "fa-solid fa-bell"  data-count = "0" > </ i > 
+                  </a> 
+                  <ul class = "dropdown-menu dropdown-menu-dark text-wrap"  id = "notify"  style = "width: 300px !important;" > </ ul > 
+                </li> 
+              </ul> 
+            </div> 
+          </div>  {% endcomment %}
+          
+          {% comment %} <li class="nav-item d-flex align-items-center"> 
+          {% if user.is_authenticated %} 
+            <p class='par'> {{user.first_name}}   | <a href="{% url 'accounts:logout' %}">Deconnexion </a></p> 
+              {% else %}
+              <p class='par'>
+                <a href="{% url 'accounts:login' %}" >login</a> 
+                | <a href="{% url 'accounts:logout' %}" >log_out</a></p>
+                {% endif %} 
+          </li>  {% endcomment %}
+          {% comment %} <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
             <a href="javascript:;" class="nav-link text-white p-0" id="iconNavbarSidenav">
               <div class="sidenav-toggler-inner">
                 <i class="sidenav-toggler-line bg-white"></i>
@@ -36,13 +333,13 @@
                 <i class="sidenav-toggler-line bg-white"></i>
               </div>
             </a>
-          </li>
-          <li class="nav-item px-3 d-flex align-items-center">
+          </li> {% endcomment %}
+          {% comment %} <li class="nav-item px-3 d-flex align-items-center">
             <a href="javascript:;" class="nav-link text-white p-0">
               <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
             </a>
-          </li>
-          <li class="nav-item dropdown pe-2 d-flex align-items-center">
+          </li> {% endcomment %}
+          {% comment %} <li class="nav-item dropdown pe-2 d-flex align-items-center">
             <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fa fa-bell cursor-pointer"></i>
             </a>
@@ -51,7 +348,7 @@
                 <a class="dropdown-item border-radius-md" href="javascript:;">
                   <div class="d-flex py-1">
                     <div class="my-auto">
-                      <img src="{% static './assets/img/team-2.jpg' %}" class="avatar avatar-sm  me-3 ">
+                      <img src="{% static '../assets/img/team-2.jpg' %}" class="avatar avatar-sm  me-3 ">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                       <h6 class="text-sm font-weight-normal mb-1">
@@ -69,7 +366,7 @@
                 <a class="dropdown-item border-radius-md" href="javascript:;">
                   <div class="d-flex py-1">
                     <div class="my-auto">
-                      <img src="{% static './assets/img/small-logos/logo-spotify.svg' %}" class="avatar avatar-sm bg-gradient-dark  me-3 ">
+                      <img src="{% static '../assets/img/small-logos/logo-spotify.svg' %}" class="avatar avatar-sm bg-gradient-dark  me-3 ">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                       <h6 class="text-sm font-weight-normal mb-1">
@@ -114,8 +411,8 @@
                 </a>
               </li>
             </ul>
-          </li>
-        </ul>
+          </li>{% endcomment %}
+        </ul> 
       </div>
     </div>
   </nav>
@@ -128,19 +425,21 @@
             <div class="row">
               <div class="col-8">
                 <div class="numbers">
-                  <p class="text-sm mb-0 text-uppercase font-weight-bold">Today's Money</p>
+                  <p class="text-sm mb-0 text-uppercase font-weight-bold">Nombre d'employer</p>
                   <h5 class="font-weight-bolder">
-                    $53,000
+                    <span id="employe-count">0</span>
                   </h5>
-                  <p class="mb-0">
+                  {% comment %} <p class="mb-0">
                     <span class="text-success text-sm font-weight-bolder">+55%</span>
                     since yesterday
-                  </p>
+                  </p> {% endcomment %}
                 </div>
               </div>
               <div class="col-4 text-end">
                 <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
-                  <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                  <i class=" text-lg opacity-15 " aria-hidden="true"> <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person mb-7" viewBox="0 0 16 16">
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                  </svg></i>
                 </div>
               </div>
             </div>
@@ -153,19 +452,24 @@
             <div class="row">
               <div class="col-8">
                 <div class="numbers">
-                  <p class="text-sm mb-0 text-uppercase font-weight-bold">Today's Users</p>
+                  <p class="text-sm mb-0 text-uppercase font-weight-bold">demande de Conge en attente</p>
                   <h5 class="font-weight-bolder">
-                    2,300
+                    <span id="conge-count">0</span>
                   </h5>
-                  <p class="mb-0">
+                  {% comment %} <p class="mb-0">
                     <span class="text-success text-sm font-weight-bolder">+3%</span>
                     since last week
-                  </p>
+                  </p> {% endcomment %}
                 </div>
               </div>
               <div class="col-4 text-end">
                 <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
-                  <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
+                  <i class="text-lg opacity-10" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-hypnotize" viewBox="0 0 16 16">
+                      <path d="m7.949 7.998.006-.003.003.009zm.025-.028v-.03l.018.01zm0 .015.04-.022.01.006v.04l-.029.016-.021-.012zm.049.057v-.014l-.008.01zm-.05-.008h.006l-.006.004z"/>
+                      <path fill-rule="evenodd" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M4.965 1.69a6.97 6.97 0 0 1 3.861-.642c.722.767 1.177 1.887 1.177 3.135 0 1.656-.802 3.088-1.965 3.766 1.263.24 2.655-.815 3.406-2.742.38-.975.537-2.023.492-2.996a7.03 7.03 0 0 1 2.488 3.003c-.303 1.01-1.046 1.966-2.128 2.59-1.44.832-3.09.85-4.26.173l.008.021.012-.006-.01.01c.42 1.218 2.032 1.9 4.08 1.586a7.4 7.4 0 0 0 2.856-1.081 6.96 6.96 0 0 1-1.358 3.662c-1.03.248-2.235.084-3.322-.544-1.433-.827-2.272-2.236-2.279-3.58l-.012-.003c-.845.972-.63 2.71.666 4.327a7.4 7.4 0 0 0 2.37 1.935 6.97 6.97 0 0 1-3.86.65c-.727-.767-1.186-1.892-1.186-3.146 0-1.658.804-3.091 1.969-3.768l-.002-.007c-1.266-.25-2.666.805-3.42 2.74a7.4 7.4 0 0 0-.49 3.012 7.03 7.03 0 0 1-2.49-3.018C1.87 9.757 2.613 8.8 3.696 8.174c1.438-.83 3.084-.85 4.253-.176l.005-.006C7.538 6.77 5.924 6.085 3.872 6.4c-1.04.16-2.03.55-2.853 1.08a6.96 6.96 0 0 1 1.372-3.667l-.002.003c1.025-.243 2.224-.078 3.306.547 1.43.826 2.269 2.23 2.28 3.573L8 7.941c.837-.974.62-2.706-.673-4.319a7.4 7.4 0 0 0-2.362-1.931Z"/>
+                    </svg>
+                  </i>
                 </div>
               </div>
             </div>
@@ -178,43 +482,52 @@
             <div class="row">
               <div class="col-8">
                 <div class="numbers">
-                  <p class="text-sm mb-0 text-uppercase font-weight-bold">New Clients</p>
+                  <p class="text-sm mb-0 text-uppercase font-weight-bold">demande de paiement en attente</p>
                   <h5 class="font-weight-bolder">
-                    +3,462
+                    <span id="paiement-count">0</span>
                   </h5>
-                  <p class="mb-0">
+                  {% comment %} <p class="mb-0">
                     <span class="text-danger text-sm font-weight-bolder">-2%</span>
                     since last quarter
-                  </p>
+                  </p> {% endcomment %}
                 </div>
               </div>
               <div class="col-4 text-end">
                 <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
-                  <i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i>
+                  <i class=" text-lg opacity-10" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-currency-exchange" viewBox="0 0 16 16">
+                      <path d="M0 5a5 5 0 0 0 4.027 4.905 6.5 6.5 0 0 1 .544-2.073C3.695 7.536 3.132 6.864 3 5.91h-.5v-.426h.466V5.05q-.001-.07.004-.135H2.5v-.427h.511C3.236 3.24 4.213 2.5 5.681 2.5c.316 0 .59.031.819.085v.733a3.5 3.5 0 0 0-.815-.082c-.919 0-1.538.466-1.734 1.252h1.917v.427h-1.98q-.004.07-.003.147v.422h1.983v.427H3.93c.118.602.468 1.03 1.005 1.229a6.5 6.5 0 0 1 4.97-3.113A5.002 5.002 0 0 0 0 5m16 5.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0m-7.75 1.322c.069.835.746 1.485 1.964 1.562V14h.54v-.62c1.259-.086 1.996-.74 1.996-1.69 0-.865-.563-1.31-1.57-1.54l-.426-.1V8.374c.54.06.884.347.966.745h.948c-.07-.804-.779-1.433-1.914-1.502V7h-.54v.629c-1.076.103-1.808.732-1.808 1.622 0 .787.544 1.288 1.45 1.493l.358.085v1.78c-.554-.08-.92-.376-1.003-.787zm1.96-1.895c-.532-.12-.82-.364-.82-.732 0-.41.311-.719.824-.809v1.54h-.005zm.622 1.044c.645.145.943.38.943.796 0 .474-.37.8-1.02.86v-1.674z"/>
+                    </svg>
+                  </i>
+                  {% comment %} <i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i> {% endcomment %}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    
       <div class="col-xl-3 col-sm-6">
         <div class="card">
           <div class="card-body p-3">
             <div class="row">
               <div class="col-8">
                 <div class="numbers">
-                  <p class="text-sm mb-0 text-uppercase font-weight-bold">Sales</p>
+                  <p class="text-sm mb-0 text-uppercase font-weight-bold">Nombre d'Utilisateur</p>
                   <h5 class="font-weight-bolder">
-                    $103,430
+                    <span id="user-count">0</span>
                   </h5>
-                  <p class="mb-0">
+                  {% comment %} <p class="mb-0">
                     <span class="text-success text-sm font-weight-bolder">+5%</span> than last month
-                  </p>
+                  </p> {% endcomment %}
                 </div>
               </div>
               <div class="col-4 text-end">
                 <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
-                  <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
+                  <i class="text-lg opacity-10 " aria-hidden="true"> <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-check-fill mb-7" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                    <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                  </svg></i>
                 </div>
               </div>
             </div>
@@ -243,7 +556,7 @@
         <div class="card card-carousel overflow-hidden h-100 p-0">
           <div id="carouselExampleCaptions" class="carousel slide h-100" data-bs-ride="carousel">
             <div class="carousel-inner border-radius-lg h-100">
-              <div class="carousel-item h-100 active" style="background-image: url('./assets/img/carousel-1.jpg');
+              <div class="carousel-item h-100 active" style="background-image:  url('./assets/img/carousel-1.jpg');
     background-size: cover;">
                 <div class="carousel-caption d-none d-md-block bottom-0 text-start start-0 ms-5">
                   <div class="icon icon-shape icon-sm bg-white text-center border-radius-md mb-3">
@@ -253,7 +566,7 @@
                   <p>There’s nothing I really wanted to do in life that I wasn’t able to get good at.</p>
                 </div>
               </div>
-              <div class="carousel-item h-100" style="background-image: url('./assets/img/carousel-2.jpg');
+              <div class="carousel-item h-100" style="background-image:  url('./assets/img/carousel-2.jpg');
     background-size: cover;">
                 <div class="carousel-caption d-none d-md-block bottom-0 text-start start-0 ms-5">
                   <div class="icon icon-shape icon-sm bg-white text-center border-radius-md mb-3">
@@ -263,7 +576,7 @@
                   <p>That’s my skill. I’m not really specifically talented at anything except for the ability to learn.</p>
                 </div>
               </div>
-              <div class="carousel-item h-100" style="background-image: url('./assets/img/carousel-3.jpg');
+              <div class="carousel-item h-100" style="background-image:url('./assets/img/carousel-3.jpg');
     background-size: cover;">
                 <div class="carousel-caption d-none d-md-block bottom-0 text-start start-0 ms-5">
                   <div class="icon icon-shape icon-sm bg-white text-center border-radius-md mb-3">
@@ -301,7 +614,7 @@
                   <td class="w-30">
                     <div class="d-flex px-2 py-1 align-items-center">
                       <div>
-                        <img src="{% static './assets/img/icons/flags/US.png' %}" alt="Country flag">
+                        <img src="{%  static './assets/img/icons/flags/US.png' %}" alt="Country flag">
                       </div>
                       <div class="ms-4">
                         <p class="text-xs font-weight-bold mb-0">Country:</p>
@@ -332,7 +645,7 @@
                   <td class="w-30">
                     <div class="d-flex px-2 py-1 align-items-center">
                       <div>
-                        <img src="{% static './assets/img/icons/flags/DE.png'%}" alt="Country flag">
+                        <img src="{% static './assets/img/icons/flags/DE.png' %}" alt="Country flag">
                       </div>
                       <div class="ms-4">
                         <p class="text-xs font-weight-bold mb-0">Country:</p>
@@ -494,111 +807,64 @@
         </div>
       </div>
     </div>
-    <footer class="footer pt-3  ">
-      <div class="container-fluid">
-        <div class="row align-items-center justify-content-lg-between">
-          <div class="col-lg-6 mb-lg-0 mb-4">
-            <div class="copyright text-center text-sm text-muted text-lg-start">
-              © <script>
-                document.write(new Date().getFullYear())
-              </script>,
-              made with <i class="fa fa-heart"></i> by
-              <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
-              for a better web.
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-              <li class="nav-item">
-                <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
-              </li>
-              <li class="nav-item">
-                <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
-              </li>
-              <li class="nav-item">
-                <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
-              </li>
-              <li class="nav-item">
-                <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </footer>
-  </div>
-</main>
-<div class="fixed-plugin">
-  <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
-    <i class="fa fa-cog py-2"> </i>
-  </a>
-  <div class="card shadow-lg">
-    <div class="card-header pb-0 pt-3 ">
-      <div class="float-start">
-        <h5 class="mt-3 mb-0">Argon Configurator</h5>
-        <p>See our dashboard options.</p>
-      </div>
-      <div class="float-end mt-4">
-        <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
-          <i class="fa fa-close"></i>
-        </button>
-      </div>
-      <!-- End Toggle Button -->
-    </div>
-    <hr class="horizontal dark my-1">
-    <div class="card-body pt-sm-3 pt-0 overflow-auto">
-      <!-- Sidebar Backgrounds -->
-      <div>
-        <h6 class="mb-0">Sidebar Colors</h6>
-      </div>
-      <a href="javascript:void(0)" class="switch-trigger background-color">
-        <div class="badge-colors my-2 text-start">
-          <span class="badge filter bg-gradient-primary active" data-color="primary" onclick="sidebarColor(this)"></span>
-          <span class="badge filter bg-gradient-dark" data-color="dark" onclick="sidebarColor(this)"></span>
-          <span class="badge filter bg-gradient-info" data-color="info" onclick="sidebarColor(this)"></span>
-          <span class="badge filter bg-gradient-success" data-color="success" onclick="sidebarColor(this)"></span>
-          <span class="badge filter bg-gradient-warning" data-color="warning" onclick="sidebarColor(this)"></span>
-          <span class="badge filter bg-gradient-danger" data-color="danger" onclick="sidebarColor(this)"></span>
-        </div>
-      </a>
-      <!-- Sidenav Type -->
-      <div class="mt-3">
-        <h6 class="mb-0">Sidenav Type</h6>
-        <p class="text-sm">Choose between 2 different sidenav types.</p>
-      </div>
-      <div class="d-flex">
-        <button class="btn bg-gradient-primary w-100 px-3 mb-2 active me-2" data-class="bg-white" onclick="sidebarType(this)">White</button>
-        <button class="btn bg-gradient-primary w-100 px-3 mb-2" data-class="bg-default" onclick="sidebarType(this)">Dark</button>
-      </div>
-      <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
-      <!-- Navbar Fixed -->
-      <div class="d-flex my-3">
-        <h6 class="mb-0">Navbar Fixed</h6>
-        <div class="form-check form-switch ps-0 ms-auto my-auto">
-          <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
-        </div>
-      </div>
-      <hr class="horizontal dark my-sm-4">
-      <div class="mt-2 mb-5 d-flex">
-        <h6 class="mb-0">Light / Dark</h6>
-        <div class="form-check form-switch ps-0 ms-auto my-auto">
-          <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version" onclick="darkMode(this)">
-        </div>
-      </div>
-      <a class="btn bg-gradient-dark w-100" href="https://www.creative-tim.com/product/argon-dashboard">Free Download</a>
-      <a class="btn btn-outline-dark w-100" href="https://www.creative-tim.com/learning-lab/bootstrap/license/argon-dashboard">View documentation</a>
-      <div class="w-100 text-center">
-        <a class="github-button" href="https://github.com/creativetimofficial/argon-dashboard" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star creativetimofficial/argon-dashboard on GitHub">Star</a>
-        <h6 class="mt-3">Thank you for sharing!</h6>
-        <a href="https://twitter.com/intent/tweet?text=Check%20Argon%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fargon-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-          <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
-        </a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/argon-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
-          <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
+    
 {% endblock %}
+
+#
+
+{% comment %} 
+{% block js_script %}
+<script>
+    // setup chat scoket
+    const notifyScoket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/notify/'
+    );
+
+    // on socket open
+    notifyScoket.onopen = function (e) {
+        console.log('Socket successfully connected.');
+    };
+
+    // on socket close
+    notifyScoket.onclose = function (e) {
+        console.log('Socket closed unexpectedly');
+    };
+
+    // on receiving message on group
+    notifyScoket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        const message = data.message;
+        // Call the setMessage function to add the new li element
+        setMessage(message);
+
+    };
+
+    function setMessage(message) {
+        // Create a new li element
+        var newLi = document.createElement('li');
+
+        // Create a new anchor element
+        var newAnchor = document.createElement('a');
+        newAnchor.className = 'dropdown-item text-wrap';
+        newAnchor.href = '#';
+        newAnchor.textContent = message;
+
+        // Append the anchor element to the li element
+        newLi.appendChild(newAnchor);
+
+        // Get the ul element with the id "notify"
+        var ulElement = document.getElementById('notify');
+
+        // Append the new li element to the ul element
+        ulElement.appendChild(newLi);
+
+        // getting object of count
+        count = document.getElementById('bellCount').getAttribute('data-count');
+        document.getElementById('bellCount').setAttribute('data-count', parseInt(count) + 1);
+    }
+
+
+</script> {% endcomment %}
+{% comment %} {% endblock %} {% endcomment %}

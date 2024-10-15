@@ -5,7 +5,7 @@ from .views import get_counts
 app_name = "employer"
 
 urlpatterns = [
-    #path('employerMenu/', views.index, name='indexOfMenu'),
+    path('home', views.index, name='home'),
     path('dashboard/', views.tableau, name='tableau'), # ch tableau de bord 
     path('table-employe/', views.table, name='table'), #ch vue de la table 
     path('profile/<int:employer_id>', views.vuEmployer, name='employerVu'), #chemin de la vue du profile

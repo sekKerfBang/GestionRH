@@ -10,8 +10,9 @@ from notifications.signals import notify
 from notifications.models import Notification
 from django.http import JsonResponse
 
-# def index(request, *args):
-#      return render(request,'index.html')
+def index(request, *args):
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
+    return render(request,'index.html', {'notifications_unread' : notifications_unread} )
 '''
 user.has_perm("employer.view_employe")
 '''
