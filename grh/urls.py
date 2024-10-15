@@ -19,8 +19,10 @@ from django.urls import path, include # type: ignore
 from django.conf import settings
 from django.conf.urls.static import static
 from notifications import notifications_views
+from employer.views import index
 
 urlpatterns = [
+    path('', index, name='home'),
     path('admin/', admin.site.urls),
     path('employe/', include('employer.urls')),
     path('accounts/', include('accounts.urls')),
