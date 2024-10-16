@@ -288,6 +288,7 @@ def notification_detail(request, notification_id):
 
     # Vérifier si l'utilisateur est dans le groupe "Manager"
     is_manager = request.user.groups.filter(name='Manager_user').exists()
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
 
     # Si l'utilisateur est manager, récupérer les demandes de congé et de paiement en attente
     demandes_conge = Abscence.objects.filter(status='PENDING') if is_manager else None
@@ -302,6 +303,7 @@ def notification_detail(request, notification_id):
 
     # Contexte à passer au template
     context = {
+        'notifications_unread' : notifications_unread,
         'employe': employe,
         'demandes_paiement': demandes_paiement,
         'demandes_conge': demandes_conge,
