@@ -13,7 +13,8 @@ from django.http import JsonResponse
 @login_required()
 def index(request, *args):
     notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
-    return render(request,'index.html', {'notifications_unread' : notifications_unread} )
+    is_manager = request.user.groups.filter(name='Manager_user').exists()
+    return render(request,'index.html', {'notifications_unread' : notifications_unread, 'is_manager' : is_manager} )
 '''
 user.has_perm("employer.view_employe")
 '''
