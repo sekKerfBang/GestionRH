@@ -27,9 +27,6 @@ def tableau(request, *args):
     notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
     
     context = {
-        # 'empl' : get_object_or_404(Employe, user=request.user),
-        # 'employe': employe,
-    
         'notifications_unread': notifications_unread
     }
     
