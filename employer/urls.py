@@ -22,6 +22,7 @@ urlpatterns = [
     path('notification/accepter_conge/<int:conge_id>/', views.accepter_demande, name='accepter_demande'),
     path('notification/accepter_paiement/<int:paiement_id>/', views.accepter_paiement, name='accepter_paiement'),
     path('notification/<int:notification_id>/', views.notification_detail, name='notification_detail'),
+    path('notifications/', views.all_notifications, name='all_notifications'),
     path('get_counts/', get_counts, name='get_counts'),                                                                                                                       
     
 ]

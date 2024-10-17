@@ -235,28 +235,29 @@
                   {% endif %}
 
                 {% endfor %}
-                <div class="dropdown-center">
-                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title='Notification' >
+                <div class="dropdown">
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                       Notifications
                       {% if notifications_unread %}
                           <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
                       {% endif %}
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
-                    {% if notifications_unread %}
-                        {% for notification in notifications_unread %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
-                                    {{ notification.actor }} - {{ notification.verb }} 
-                                </a>
-                            </li> 
-                        {% endfor %}
-                    {% else %}
-                        <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
-                    {% endif %}
-                </ul>
-                      
-            
+                      {% if notifications_unread %}
+                          {% for notification in notifications_unread %}
+                              <li>
+                                  <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
+                                      {{ notification.actor }} - {{ notification.verb }} 
+                                  </a>
+                              </li> 
+                          {% endfor %}
+                          <li>
+                              <a class="dropdown-item text-center" href="{% url 'employer:all_notifications' %}">Voir toutes les notifications</a>
+                          </li>
+                      {% else %}
+                          <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
+                      {% endif %}
+                  </ul>
               </div>
               <div class='ms-4 mb-3 text-white fontWeigth-bolder'>
                 <a  id='area' class='item link active text-white fw-bold' href="{% url 'accounts:logout' %}">
@@ -373,17 +374,18 @@
         
       
           {% if is_manager %}
-          <a href="{% url 'employer:add' %}"><button id='aj' class='btn btn-primary'> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
+          <a href="{% url 'employer:add' %}">
+            <button id='aj' class='btn btn-light'> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
             <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
             <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
-          </svg>   Enregistrer</button></a>
+          </svg> Enregistrer</button></a>
 
 
           <a href="{% url 'accounts:register' %}" class="text-white ">
-            <button type='button' id='aj' class="btn btn-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
+            <button type='button' id='aj' class="btn btn-light"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
               <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
               <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
-            </svg> new utilisateur</button></a>
+            </svg> New User</button></a>
             {% endif %}
           <div class="card mb-4">
             <div class="card-header pb-0">
@@ -401,7 +403,7 @@
                       <th class="text-center text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ">ADRESSE</th>
                       <th class="text-center text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ">TELEPHONE</th>
                       <th class="text-center text-uppercase text-primary text-xxs font-weight-bolder opacity-7 ">Service</th>
-                      <th class="text-center text-uppercase text-danger text-xxs font-weight-bolder opacity-7 " colspan='3'>ACTIONS</th>
+                      <th class="text-center text-uppercase text-danger text-xxs font-weight-bolder opacity-7 col='1' "></th>
                     </tr>
                   </thead>
                   <tbody >
@@ -458,7 +460,7 @@
   </div>
 </td> 
 
-<td>  
+{% comment %} <td>  
   <a  href="{% url 'employer:employerVu' empl.id %}"> 
     <button  id='vu' class='btn btn-success'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
       <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
@@ -480,10 +482,54 @@
       <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
     </svg> Supprimer</button>
 </form>
-  {% comment %} <a  href="{% url 'employer:delete' empl.id %}"> 
-    <button  id='sup' class='btn btn-danger'> Supprimer</button>
-  </a>  {% endcomment %}
-</td>                 
+</td>          
+        {% endcomment %}
+
+        <td>
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              Actions
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <!-- Lien Voir -->
+              <li>
+                <a class="dropdown-item" href="{% url 'employer:employerVu' empl.id %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                  </svg>
+                  Voir
+                </a>
+              </li>
+        
+              <!-- Lien Modifier -->
+              <li>
+                <a class="dropdown-item" href="{% url 'employer:edit' empl.id %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-gear" viewBox="0 0 16 16">
+                    <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                    <path d="M3 12.5v-2A1.5 1.5 0 0 1 6.5 9h8A1.5 1.5 0 0 1 16 10.5v2A1.5 1.5 0 0 1 14.5 14h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
+                  </svg>
+                  Modifier
+                </a>
+              </li>
+        
+              <!-- Lien Supprimer -->
+              <li>
+                <form method="POST" action="{% url 'employer:delete' empl.id %}" onsubmit="return confirmSuppression();">
+                  {% csrf_token %}
+                  <button type="submit" class="dropdown-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                      <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/>
+                      <path d="M4.5 5.5a.5.5 0 0 1 .5-.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5.5a.5.5 0 0 1 .5-.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                    </svg>
+                    Supprimer
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        </td>
+        
 </tr>
       
                     {% endfor%}

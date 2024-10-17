@@ -2,7 +2,7 @@
 
 {% load static  %}
 
-{% block title %} Notifications {% endblock  %}
+{% block title %} Notifications Liste {% endblock  %}
   {% block content %}
 <main class="main-content position-relative border-radius-lg ">
     <!-- Navbar -->
@@ -11,9 +11,9 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Gestion Notifications</li>
+            <li class="breadcrumb-item text-sm text-white active" aria-current="page">Gestion Liste Notifications</li>
           </ol>
-          <h6 class="font-weight-bolder text-white mb-0">Gestion Notifications</h6>
+          <h6 class="font-weight-bolder text-white mb-0">Gestion Liste Notifications</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -23,6 +23,30 @@
             </div> {% endcomment %}
           </div>
           <ul class="navbar-nav  justify-content-end">
+            <div class="dropdown-center">
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  Notifications
+                  {% if notifications_unread %}
+                      <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
+                  {% endif %}
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                  {% if notifications_unread %}
+                      {% for notification in notifications_unread %}
+                          <li>
+                              <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
+                                  {{ notification.actor }} - {{ notification.verb }} 
+                              </a>
+                          </li> 
+                      {% endfor %}
+                      <li>
+                          <a class="dropdown-item text-center" href="{% url 'employer:all_notifications' %}">Voir toutes les notifications</a>
+                      </li>
+                  {% else %}
+                      <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
+                  {% endif %}
+              </ul>
+          </div>
             {% comment %} <li class="nav-item d-flex align-items-center"> 
               {% if user.is_authenticated %} 
                 <p class='par'> {{ user.first_name }}  | <a href="{% url 'accounts:logout' %}">Deconnexion </a></p> 
@@ -158,23 +182,37 @@
                 {% comment %} <button type="submit" id='aj'>Valider Conge</button>
             </form>
           </div> {% endcomment %}
-          <div class="card mb-4">
-            <div class="card-header pb-0">
-              <h6>Notifications Employe</h6>
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive p-0">
-                <h1 class='ms-3'> Notifications</h1>
-                    <ul class="" style="width: 300px !important;">
-                        {% for notification in notifications %}
-                            <li>
-                                <a href="{% url 'notifications:notifications_detail' notification.id %}">
-                                  {{ notification.actor }} - {{ notification.message }} - {{ notification.created_at }}
-                                </a>
-                                {% if notification.is_read %} <strong>(Lu)</strong> {% else %} <strong>(Non lu)</strong> {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
+          <h3>Toutes les notifications</h3>
+<ul class="list-group mx-2 my-5">
+    {% for notification in page_obj %}
+        <li class="list-group-item">
+          <a href="{% url 'employer:notification_detail' notification.id %}">
+            {{ notification.actor }} - {{ notification.verb }} - {{ notification.timestamp|date:"d M Y H:i" }}
+          </a>
+          </li>
+    {% empty %}
+        <li class="list-group-item">Aucune notification.</li>
+    {% endfor %}
+</ul>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class='text-primary fw-bolder'>&laquo; Première</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class='text-primary fw-bolder'>Précédent</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class='text-primary fw-bolder'>Suivant</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class='text-primary fw-bolder'>Dernière &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
 
                 {% comment %} <table class="table align-items-center mb-0">
                   <thead>

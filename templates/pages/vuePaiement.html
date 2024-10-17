@@ -19,7 +19,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="{% static './assets/img/apple-icon.png' %}">
-  <link rel="icon" type="image/png" href="{% static './assets/img/favicon.png' %}">
+  <link rel="icon" type="image/png" href="{% static './logos/ande_grh1.png' %}">
+  {% comment %} <link rel="icon" type="image/png" href="{% static './assets/img/favicon.png' %}"> {% endcomment %}
   <title>
     Profile
   </title>
@@ -59,7 +60,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link " href="{% url 'employer:table' %}">
+            <a class="nav-link active" href="{% url 'employer:table' %}">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                 <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
             </div>
@@ -102,7 +103,7 @@
             <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Account pages</h6>
         </li> {% endcomment %}
         <li class="nav-item">
-            <a class="nav-link " href="{% url 'employer:abscence' %}">
+            <a class="nav-link active" href="{% url 'employer:abscence' %}">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                 <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
             </div>
@@ -110,7 +111,7 @@
             </a>
         </li>
             <li class="nav-item">
-            <a class="nav-link " href="{% url 'employer:paiement' %}">
+            <a class="nav-link active" href="{% url 'employer:paiement' %}">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                 <i class="ni ni-single-copy-04 text-warning text-sm opacity-10"></i>
             </div>
@@ -167,28 +168,29 @@
     
                     {% endfor %}
                     
-                    <div class="dropdown-center">
-                      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title='Notification' >
+                    <div class="dropdown">
+                      <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                           Notifications
                           {% if notifications_unread %}
                               <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
                           {% endif %}
                       </button>
                       <ul class="dropdown-menu dropdown-menu-end">
-                        {% if notifications_unread %}
-                            {% for notification in notifications_unread %}
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
-                                        {{ notification.actor }} - {{ notification.verb }} 
-                                    </a>
-                                </li> 
-                            {% endfor %}
-                        {% else %}
-                            <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
-                        {% endif %}
-                    </ul>
-                          
-                
+                          {% if notifications_unread %}
+                              {% for notification in notifications_unread %}
+                                  <li>
+                                      <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
+                                          {{ notification.actor }} - {{ notification.verb }} 
+                                      </a>
+                                  </li> 
+                              {% endfor %}
+                              <li>
+                                  <a class="dropdown-item text-center" href="{% url 'employer:all_notifications' %}">Voir toutes les notifications</a>
+                              </li>
+                          {% else %}
+                              <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
+                          {% endif %}
+                      </ul>
                   </div>
             <div class='ms-4 mb-3 text-white fontWeigth-bolder'>
               <a  id='area' class='item link active text-white fw-bold' href="{% url 'accounts:logout' %}">
@@ -353,7 +355,9 @@
           <div class="card">
              <div class="card-header pb-0">
               <div class="justify-content-end">
-                <a  class='text-white' href="{% url 'employer:paiement' %}"><button class="btn btn-danger btn-sm  mx-3 ">Fermer</button></a>
+                <a  class='text-white' href="{% url 'employer:paiement' %}"><button class="btn btn-danger btn-sm  mx-3 "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                </svg> Fermer</button></a>
                 {% comment %}<a  class='text-white' href="{% url 'employer:edit' employe.id %}"> <button class="btn btn-primary btn-sm ">Editer</button></a>{% endcomment %}
               </div>
             </div> 
@@ -446,7 +450,10 @@
         </div>
         <div class="col-md-4">
           <div class="card card-profile">
-            <img src="{{ paiement.employe_id.diplome_employe.url }}" alt="Image placeholder" class="card-img-top">
+            <iframe src="{{ paiement.employe_id.diplome_employe.url }}" width="100%" height="600px">
+              Votre navigateur ne supporte pas l'affichage de fichiers PDF.
+          </iframe>
+            {% comment %} <img src="{{ paiement.employe_id.diplome_employe.url }}" alt="Image placeholder" class="card-img-top"> {% endcomment %}
             <div class="row justify-content-center">
               <div class="col-4 col-lg-4 order-lg-2">
                 <div class="mt-n4 mt-lg-n6 mb-4 mb-lg-0">

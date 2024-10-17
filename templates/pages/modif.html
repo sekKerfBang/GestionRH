@@ -22,28 +22,29 @@
           </div>
           
           <ul class="navbar-nav  justify-content-end">
-            <div class="dropdown-center">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title='Notification' >
+            <div class="dropdown">
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                   Notifications
                   {% if notifications_unread %}
                       <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
                   {% endif %}
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
-                {% if notifications_unread %}
-                    {% for notification in notifications_unread %}
-                        <li>
-                            <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
-                                {{ notification.actor }} - {{ notification.verb }} 
-                            </a>
-                        </li> 
-                    {% endfor %}
-                {% else %}
-                    <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
-                {% endif %}
-            </ul>
-                  
-        
+                  {% if notifications_unread %}
+                      {% for notification in notifications_unread %}
+                          <li>
+                              <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
+                                  {{ notification.actor }} - {{ notification.verb }} 
+                              </a>
+                          </li> 
+                      {% endfor %}
+                      <li>
+                          <a class="dropdown-item text-center" href="{% url 'employer:all_notifications' %}">Voir toutes les notifications</a>
+                      </li>
+                  {% else %}
+                      <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
+                  {% endif %}
+              </ul>
           </div>
           <div class='ms-4 mb-3 text-white fontWeigth-bolder'>
             <a  id='area' class='item link active text-white fw-bold' href="{% url 'accounts:logout' %}">
@@ -166,66 +167,127 @@
                   <h6>Formulaire de Modification </h6>
                 {% csrf_token %}
                 <div class="row mx-3  ">
-                  <div class="col-12 mb-4">
+                <div class="col-12 mb-4">
                     <label for="">User</label>
-                    {{form.user}}                 
-                  </div>
-                  </div>
+                    {{form.user}}  
+                    {% if form.user.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.user.errors }}
+                        </div>
+                      {% endif %}               
+                  </div> 
+                  </div> 
                 <div class="row mx-3  ">
                   <div class="col-3 mb-4">
                     <label for="">Nom</label>
                     {{form.name_employe}}
-
+                    {% if form.name_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.name_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class="col-3 mb-4">
                     <label for="">Prenom</label>
                     {{form.prenom_employe}} 
-                    <div>
-                      {{ form.errors }}
-                    </div>
+                    {% if form.prenom_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.prenom_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class="col-3 mb-4">
                     <label for="">Date de Naissance</label>
                     {{ form.date_naiss_employe }}
+                    {% if form.date_naiss_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.date_naiss_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                 
                   <div class="col-3 mb-4">
                     <label for="">Email</label>
                     {{form.email_employe}}
+                    {% if form.email_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.email_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class="col-3 mb-4">
                     <label for="">Adresse</label>
                     {{form.adresse_employe}} 
+                    {% if form.adresse_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.adresse_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class="col-3 mb-4">
                     <label for="">Telephone</label>
                     {{ form.tel_employe }}
+                    {% if form.tel_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.tel_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
               
               
                   <div class="col-3 mb-4">
                     <label for="">Genre</label>
                     {{form.genre_employe}}
+                    {% if form.genre_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.genre_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class="col-3 mb-4">
                     <label for="">Poste</label>
                     {{form.poste_employe}} 
+                    {% if form.poste_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.poste_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class="col-3 mb-4">
                     <label for="">Contrat</label>
                     {{ form.contrat_employe }}
+                    {% if form.contrat_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.contrat_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class="col-3 mb-4">
                     <label for="">Service</label>
                     {{ form.service_employe }}
+                    {% if form.service_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.service_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class="col-3 mb-4">
                     <label for="">Image Employe</label>
                     {{ form.image_employe }}
+                    {% if form.image_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.image_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class="col-3 mb-4">
                     <label for="">Diplome Employe</label>
                     {{ form.diplome_employe }}
+                    {% if form.diplome_employe.errors %}
+                      <div class='alert alert-info text-white mt-3 font-weight-bolder pt-4 lh-1'>
+                          {{ form.diplome_employe.errors }}
+                        </div>
+                      {% endif %}
                   </div>
                   <div class='row justify-content-md-between'>
                       <div class="col-2 my-4">

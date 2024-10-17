@@ -22,28 +22,30 @@
           </div>
           <ul class="navbar-nav  justify-content-end">
             <div class="dropdown-center">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title='Notification' >
-                  Notifications
-                  {% if notifications_unread %}
-                      <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
-                  {% endif %}
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                {% if notifications_unread %}
-                    {% for notification in notifications_unread %}
+              <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    Notifications
+                    {% if notifications_unread %}
+                        <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
+                    {% endif %}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    {% if notifications_unread %}
+                        {% for notification in notifications_unread %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
+                                    {{ notification.actor }} - {{ notification.verb }} 
+                                </a>
+                            </li> 
+                        {% endfor %}
                         <li>
-                            <a class="dropdown-item" href="{% url 'employer:notification_detail' notification.id %}">
-                                {{ notification.actor }} - {{ notification.verb }} 
-                            </a>
-                        </li> 
-                    {% endfor %}
-                {% else %}
-                    <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
-                {% endif %}
-            </ul>
-                  
-        
-          </div>
+                            <a class="dropdown-item text-center" href="{% url 'employer:all_notifications' %}">Voir toutes les notifications</a>
+                        </li>
+                    {% else %}
+                        <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
+                    {% endif %}
+                </ul>
+            </div>
           <div class='ms-4 mb-3 text-white fontWeigth-bolder'>
             <a  id='area' class='item link active text-white fw-bold' href="{% url 'accounts:logout' %}">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">

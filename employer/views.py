@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group
 from notifications.signals import notify
 from notifications.models import Notification
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 
 @login_required()
 def index(request, *args):
@@ -22,10 +23,7 @@ user.has_perm("employer.view_employe")
 
 @login_required()
 def tableau(request, *args):
-    #employe = get_object_or_404(Employe, user=request.user)
-    
-    # Récupérer les notifications non lues pour l'utilisateur
-    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
     
     context = {
         'notifications_unread': notifications_unread
@@ -34,6 +32,22 @@ def tableau(request, *args):
 
     return render(request, './pages/dashboard.html', context)
 
+def all_notifications(request):
+    # Récupérons toutes les notifications pour l'utilisateur puis ils seront  paginées
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
+    all_notifications = Notification.objects.filter(recipient=request.user).order_by('-timestamp')
+    paginator = Paginator(all_notifications, 10)  # Affiche 10 notifications par page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'notifications_unread' :notifications_unread
+    }
+    
+    return render(request, './pages/notifications_list.html', context)
+
+
 # def notification(request):
 #     return render (request, './pages/notifications.html')
 from accounts.models import User
@@ -41,7 +55,7 @@ from accounts.models import User
 @login_required()
 def table(request, *args, **kwargs):
     is_manager = request.user.groups.filter(name='Manager_user').exists()
-    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
     if request.user.has_perm('employer.view_all_employes'):
         # Le manager voit tous les employés
         employe = Employe.objects.all()
@@ -56,7 +70,7 @@ def table(request, *args, **kwargs):
 
 @permission_required('employer.view_employe', raise_exception=True)
 def vuEmployer(request, employer_id, *args):
-    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
     context= {
         'employe' : get_object_or_404(Employe, pk= employer_id),
         'notifications_unread' : notifications_unread
@@ -64,12 +78,17 @@ def vuEmployer(request, employer_id, *args):
     return render(request, './pages/vueEmploye.html', context) 
 
 def vuPaiement(request, employer_id, *args):
-    context= {'paiement' : get_object_or_404(Paiement, pk= employer_id)}
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
+    context= {
+        'paiement' : get_object_or_404(Paiement, pk= employer_id),
+        'notifications_unread' : notifications_unread,
+        }
     return render(request, './pages/vuePaiement.html', context)
 
 
 @permission_required('employer.add_employe', raise_exception=True)   
 def add(request, *args):    
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
     if request.method == 'POST':
         form = EmployerForm(request.POST, request.FILES)
         if form.is_valid():
@@ -78,11 +97,12 @@ def add(request, *args):
             return redirect('employer:table')
     else:
         form = EmployerForm()
-    return render(request, './pages/ajout_employe.html', {'form':form})   
+    return render(request, './pages/ajout_employe.html', {'form':form, 'notifications_unread' : notifications_unread})   
 
 
 @permission_required('employer.change_employe', raise_exception=True)
 def edit(request, employer_id, *args, **kwargs):
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
     employer = Employe.objects.get(pk = employer_id)
     if request.method == 'POST':
         form = EmployerForm(request.POST, request.FILES, instance= employer)
@@ -90,8 +110,9 @@ def edit(request, employer_id, *args, **kwargs):
             form.save()
             return redirect('employer:table')
     else:
-        form = EmployerForm(instance= employer)      
-    return render(request, "./pages/modif.html", {'form':form})
+        form = EmployerForm(instance= employer) 
+    
+    return render(request, "./pages/modif.html", {'form':form, 'notifications_unread' : notifications_unread})
 
 
 @permission_required('employer.view_employe', raise_exception=True)  
@@ -103,7 +124,7 @@ def remove(request, employer_id, *args):
 def abscence(request, *args) :
     abscence = None
     is_manager = request.user.groups.filter(name='Manager_user').exists()
-    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
     if request.user.has_perm('employer.view_all_employes'):
         abscence = Abscence.objects.all()
     else:
@@ -116,6 +137,7 @@ def abscence(request, *args) :
 
 
 def addConge(request, *args, **kwargs):
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
     if request.method == 'POST':
         form = AbscenceForm(request.POST)
         if form.is_valid():
@@ -154,13 +176,13 @@ def addConge(request, *args, **kwargs):
     else:
         form = AbscenceForm()
 
-    return render(request, 'pages/ajout_conge.html', {'form': form})
+    return render(request, 'pages/ajout_conge.html', {'form': form, 'notifications_unread' : notifications_unread})
 
 
 def paiement(request, *args):
     paiement = None
     is_manager = request.user.groups.filter(name='Manager_user').exists()
-    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
     if request.user.has_perm('employer.view_all_employes'):
         paiement = Paiement.objects.all()
     else:
@@ -176,6 +198,7 @@ def paiement(request, *args):
     return render(request, './pages/paiement.html', context)
 
 def addPaiement(request, *args):
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
     if request.method == 'POST':
         form = PaiementForm(request.POST)
         if form.is_valid():
@@ -214,7 +237,7 @@ def addPaiement(request, *args):
     else :
         form = PaiementForm()
         
-    return render(request, './pages/ajout_paiement.html', {'form' : form})        
+    return render(request, './pages/ajout_paiement.html', {'form' : form, 'notifications_unread' : notifications_unread})        
     
 from .tasks import somme
 
@@ -289,7 +312,7 @@ def notification_detail(request, notification_id):
 
     # Vérifier si l'utilisateur est dans le groupe "Manager"
     is_manager = request.user.groups.filter(name='Manager_user').exists()
-    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)
+    notifications_unread = Notification.objects.filter(recipient=request.user, unread=True)[:5]
 
     # Si l'utilisateur est manager, récupérer les demandes de congé et de paiement en attente
     demandes_conge = Abscence.objects.filter(status='PENDING') if is_manager else None

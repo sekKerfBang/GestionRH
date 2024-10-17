@@ -26,7 +26,7 @@ class EmployerForm(forms.ModelForm):
         }
         error_messages = {
             'user': {
-                'required': 'Veuillez specifier l\'id.',
+                'required': 'Veuillez specifier l\'email',
             },
             'name_employe': {
                 'required': 'Veuillez saisir votre nom.',
@@ -65,6 +65,21 @@ class EmployerForm(forms.ModelForm):
                 'required' : 'Veuillez specifier votre diplome ',
             },
         }
+        
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance', None)
+        super().__init__(*args, **kwargs)
+
+        # Masquer le champ 'user' si c'est une modification
+        if instance:
+            self.fields['user'].widget = forms.HiddenInput()    
+        
+    def clean_diplome_employe(self):
+        file = self.cleaned_data.get('diplome_employe')
+        if file:
+            if file.size > 5 * 1024 * 1024:  # ne dois pas depasser 5 MB sinon une erreur est lever
+                raise forms.ValidationError("Le fichier est trop volumineux (max 5 MB).")
+        return file
         
 
 class  AbscenceForm(forms.ModelForm):

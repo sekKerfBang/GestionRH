@@ -19,7 +19,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="{% static './assets/img/apple-icon.png' %}">
-  <link rel="icon" type="image/png" href="{% static './assets/img/favicon.png' %}">
+  <link rel="icon" type="image/png" href="{% static './logos/ande_grh1.png' %}">
+  {% comment %} <link rel="icon" type="image/png" href="{% static './assets/img/favicon.png' %}"> {% endcomment %}
   <title>
     Profile
   </title>
@@ -158,16 +159,14 @@
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             
           </div>
-          <div class="dropdown-center">
-          <ul class="navbar-nav justify-content-end">
-            <div class="dropdown-center">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title='Notification' >
-                  Notifications
-                  {% if notifications_unread %}
-                      <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
-                  {% endif %}
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
+          <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                Notifications
+                {% if notifications_unread %}
+                    <span class="badge bg-danger">{{ notifications_unread|length }}</span> <!-- Nombre de notifications non lues -->
+                {% endif %}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
                 {% if notifications_unread %}
                     {% for notification in notifications_unread %}
                         <li>
@@ -176,13 +175,14 @@
                             </a>
                         </li> 
                     {% endfor %}
+                    <li>
+                        <a class="dropdown-item text-center" href="{% url 'employer:all_notifications' %}">Voir toutes les notifications</a>
+                    </li>
                 {% else %}
                     <li><a class="dropdown-item" href="#">Aucune nouvelle notification</a></li>
                 {% endif %}
             </ul>
-                  
-        
-          </div>
+        </div>
           <div class='ms-4 mb-3 text-white fontWeigth-bolder'>
             <a  id='area' class='item link active text-white fw-bold' href="{% url 'accounts:logout' %}">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
@@ -443,7 +443,14 @@
         </div>
         <div class="col-md-4">
           <div class="card card-profile">
-            <img src="{{ employe.diplome_employe.url }}" alt="Image placeholder" class="card-img-top">
+            <iframe src="{{ employe.diplome_employe.url }}" width="100%" height="600px">
+              Votre navigateur ne supporte pas l'affichage de fichiers PDF.
+          </iframe>
+            {% comment %} <img src="{{ employe.diplome_employe.url }}" alt="Image placeholder" class="card-img-top"> {% endcomment %}
+              {% comment %} <embed src="{{ employe.diplome_employe.url }}" width="100%" height="600px" type="application/pdf">
+              
+            </embed> {% endcomment %}
+          
             <div class="row justify-content-center">
               <div class="col-4 col-lg-4 order-lg-2">
                 <div class="mt-n4 mt-lg-n6 mb-4 mb-lg-0">
