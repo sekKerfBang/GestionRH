@@ -388,8 +388,10 @@
             </svg> New User</button></a>
             {% endif %}
           <div class="card mb-4">
-            <div class="card-header pb-0">
+            <div class="card-header pb-0 d-flex justify-content-between">
               <h6>Employer table</h6>
+              <a href="{% url 'employer:export_employers_to_excel' %}">
+              <button type='button' class='btn btn-outline-secondary fw-bolder'>Export Excel </button> </a>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">

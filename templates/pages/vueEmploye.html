@@ -443,10 +443,10 @@
         </div>
         <div class="col-md-4">
           <div class="card card-profile">
-            <iframe src="{{ employe.diplome_employe.url }}" width="100%" height="600px">
+            {% comment %} <iframe src="{{ employe.diplome_employe.url }}" width="100%" height="600px">
               Votre navigateur ne supporte pas l'affichage de fichiers PDF.
-          </iframe>
-            {% comment %} <img src="{{ employe.diplome_employe.url }}" alt="Image placeholder" class="card-img-top"> {% endcomment %}
+          </iframe> {% endcomment %}
+            <img src="{{ employe.diplome_employe.url }}" alt="Image placeholder" class="card-img-top"> 
               {% comment %} <embed src="{{ employe.diplome_employe.url }}" width="100%" height="600px" type="application/pdf">
               
             </embed> {% endcomment %}

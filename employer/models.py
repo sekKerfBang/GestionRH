@@ -35,8 +35,8 @@ class Employe(models.Model):
         ('autre', 'AUTRE'),
     ]
     genre_employe = models.CharField(max_length=10, choices=gr, verbose_name='Genre', blank=False)
-    #diplome_employe = models.ImageField(upload_to='image_diplome_employe/', verbose_name='Image Diplome', blank=False)
-    diplome_employe = models.FileField(upload_to='image_diplome_employe/', validators=[validate_file_extension, validate_file_size])
+    diplome_employe = models.ImageField(upload_to='image_diplome_employe/', verbose_name='Image Diplome', blank=False)
+    #diplome_employe = models.FileField(upload_to='image_diplome_employe/', validators=[validate_file_extension, validate_file_size])
     p = [
         ('DEV', 'Developpeur'),
         ('RH', 'Gestion Humaine'),

@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group
 from notifications.signals import notify
 from notifications.models import Notification
 from django.http import JsonResponse
+import openpyxl
 from django.core.paginator import Paginator
 
 @login_required()
@@ -337,49 +338,8 @@ def notification_detail(request, notification_id):
 
     # Afficher la page de détail de la notification
     return render(request, './pages/notifications_detail.html', context)
-# def notification_detail(request, notification_id):
-#     employe = get_object_or_404(Employe, user=request.user)
-
-#     # Vérifier si l'utilisateur fait partie du groupe Manager
-#     is_manager = request.user.groups.filter(name='Manager_user').exists()
-
-#     # Récupérer les demandes de congé en attente si l'utilisateur est un manager
-#     demandes_conge = Abscence.objects.filter(status='PENDING') if is_manager else None
-#     demandes_paiement = Paiement.objects.filter(status='PENDING') if is_manager else None
-#     # Récupérer la notification par son ID
-#     notification = get_object_or_404(Notification, pk=notification_id, recipient=request.user)
-    
-#     # Marquer la notification comme lue si elle ne l'est pas déjà
-#     if notification.unread:
-#         notification.mark_as_read()
-    
-#     context = {
-#         'employe': employe,
-#         'demandes_paiement' : demandes_paiement,
-#         'demandes_conge': demandes_conge,
-#         'notification': notification,
-#         'is_manager': is_manager,  # Ajout de la variable is_manager au context
-#     }
-#     # Afficher la page de détail de la notification
-#     return render(request, './pages/notifications_detail.html', context)
 
 
-
-# request ajax and return jason
-# def get_counts(request):
-#     if request.is_ajax() and request.method == "GET":
-#         print("get_counts called")
-
-#         employe_count = Employe.objects.count()
-#         conge_count = Abscence.objects.filter(status='PENDING').count()
-#         paiement_count = Paiement.objects.filter(status='PENDING').count()
-
-#         data = {
-#             'employe_count': employe_count,
-#             'conge_count': conge_count,
-#             'paiement_count' : paiement_count,
-#         }
-#         return JsonResponse(data)
 def get_counts(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == "GET":
         try:
@@ -398,3 +358,40 @@ def get_counts(request):
         except Exception as e:
             print(f"Erreur dans get_counts: {e}")  # Cela affichera l'erreur dans la console
             return JsonResponse({'error': 'Une erreur est survenue'}, status=500)
+        
+
+
+def export_employers_to_excel(request):
+    # Créer un nouveau fichier Excel
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Employers"
+
+    # Ajouter les en-têtes de colonnes
+    columns = ["ID", "Nom", "Prénom", "Email", "Adresse", "Téléphone", "Service", "Contrat", "Poste"]
+    ws.append(columns)
+
+    # Ajouter les données des employeurs
+    employers = Employe.objects.all()  # Ajustez selon votre modèle
+    for employe in  employers:
+        ws.append([
+            employe.id,
+            employe.name_employe,
+            employe.prenom_employe,
+            employe.email_employe,
+            employe.adresse_employe,
+            employe.tel_employe,
+            employe.service_employe,
+            employe.contrat_employe,
+            employe.poste_employe
+            
+            if employe.service_employe else '',  # Si vous avez un champ relationnel pour le service
+        ])
+
+    # Générer la réponse HTTP avec le fichier Excel
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=employers.xlsx'
+    wb.save(response)
+    
+    return response
+        
