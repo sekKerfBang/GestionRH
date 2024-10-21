@@ -22,7 +22,7 @@ from notifications import notifications_views
 from employer.views import index
 
 urlpatterns = [
-    path('accueil', index, name='home'),
+    path('', index, name='home'),
     path('admin/', admin.site.urls),
     path('employe/', include('employer.urls')),
     path('accounts/', include('accounts.urls')),
