@@ -375,7 +375,7 @@ def export_employers_to_excel(request):
     employers = Employe.objects.all()  # Ajustez selon votre modèle
     for employe in  employers:
         ws.append([
-            employe.id,
+            str(employe.id),
             employe.name_employe,
             employe.prenom_employe,
             employe.email_employe,

@@ -1,6 +1,7 @@
 from django.db import models
 from django.forms import ValidationError 
 from accounts.models import User
+import uuid
 
 MAX_UPLOAD_SIZE = 5242880  # 5 MB
 
@@ -21,7 +22,9 @@ def validate_file_extension(value):
 
 
 
-class Employe(models.Model): 
+class Employe(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    matricule = models.IntegerField(verbose_name='Matricule')
     name_employe = models.CharField(max_length=20, verbose_name='Nom', blank=False)
     prenom_employe = models.CharField(max_length=25, verbose_name='Prenom', blank=False)
     date_naiss_employe = models.DateField(verbose_name='Date de Naissance', blank=False)

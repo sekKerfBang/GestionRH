@@ -44,7 +44,7 @@ def register_user(request, *args, **kwargs):
                 )
             
             messages.success(request, 'Utilisateur enregistrer avec succes !')
-            return redirect('accounts:login')
+            return redirect('employer:add')
     else:
         form = UserRegister()
     return render(request, './pages/sign-up1.html', {'form': form})

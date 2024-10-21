@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
+import uuid
 
 
 class UserManager(BaseUserManager):
@@ -48,18 +49,19 @@ class UserManager(BaseUserManager):
   
 
 class User(AbstractBaseUser, PermissionsMixin):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     email = models.EmailField(verbose_name='email adresse ', max_length=255, unique=True)
     first_name = models.CharField(verbose_name='Prenom ',max_length=150, null=False, blank=False)
     last_name = models.CharField(verbose_name='Nom ', max_length=150, null=False, blank=False)
     profile_user = models.ImageField(upload_to='profile/', verbose_name='Image ', blank=False, null=False)
-    # matricule = models.IntegerField(verbose_name='Matricule')
+    matricule = models.IntegerField(verbose_name='Matricule')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     # Remarquez l'abscence de "champ password", c'est deja integrer pas besoin de preciser
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name'] # par defaut l'email et le password sont requis 
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'matricule'] # par defaut l'email et le password sont requis 
     
         
     

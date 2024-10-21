@@ -4,12 +4,12 @@ from accounts.models import User
 from .models import Abscence, Paiement
 
 class EmployerForm(forms.ModelForm):
-    user = forms.ModelChoiceField(queryset=User.objects.all(), label='User ', widget=forms.Select(attrs={'placeholder' : 'User_id', 'class' :'form-select'}))
+    user = forms.ModelChoiceField(queryset=User.objects.all(), label='User ', widget=forms.Select(attrs={ 'class' :'form-control'}))
 
     class Meta:
         model = Employe
-        fields = ['user' ,'name_employe', 'prenom_employe', 'date_naiss_employe', 'email_employe', 'adresse_employe', 'tel_employe', 'image_employe', 'poste_employe', 'contrat_employe', 'service_employe', 'genre_employe', 'diplome_employe']
-        labels =  { 'name_employe': 'Nom', 'prenom_employe': 'Prenom', 'date_naiss_employe' : ' Date ', 'email_employe': 'Email', 'adresse_employe': 'Adresse', 'tel_employe': 'Telephone', 'image_employe': 'Image', 'genre_employe': 'Genre', 'diplome_employe': 'Diplome'}
+        fields = ['user', 'matricule','name_employe', 'prenom_employe', 'date_naiss_employe', 'email_employe', 'adresse_employe', 'tel_employe', 'image_employe', 'poste_employe', 'contrat_employe', 'service_employe', 'genre_employe', 'diplome_employe']
+        labels = { 'name_employe': 'Nom', 'prenom_employe': 'Prenom', 'date_naiss_employe' : ' Date ', 'email_employe': 'Email', 'adresse_employe': 'Adresse', 'tel_employe': 'Telephone', 'image_employe': 'Image', 'genre_employe': 'Genre', 'diplome_employe': 'Diplome'}
         widgets = {
             'name_employe' : forms.TextInput(attrs={'placeholder' : 'Votre Nom', 'class' :'form-control'}),
             'prenom_employe' : forms.TextInput(attrs={'placeholder' : 'Votre prenom', 'class' :'form-control'}),
@@ -22,7 +22,8 @@ class EmployerForm(forms.ModelForm):
             'service_employe' :  forms.Select(attrs={'class' : 'form-select'}),
             'genre_employe'  : forms.Select(attrs={'class' : 'form-select'}),
             'image_employe' : forms.FileInput(attrs={'class' : 'form-control'}),
-            'diplome_employe' : forms.FileInput(attrs={'class' : 'form-control'})
+            'diplome_employe' : forms.FileInput(attrs={'class' : 'form-control'}),
+            'matricule' : forms.TextInput(attrs={'placeholder' : 'Votre matricule', 'class' : 'form-control'})
         }
         error_messages = {
             'user': {
@@ -64,8 +65,14 @@ class EmployerForm(forms.ModelForm):
             'diplome_employe' : {
                 'required' : 'Veuillez specifier votre diplome ',
             },
+            'matricule' : {
+                'required' : 'Veuillez specifier votre matricule ',
+            },
+                
         }
         
+
+
     def __init__(self, *args, **kwargs):
         instance = kwargs.get('instance', None)
         super().__init__(*args, **kwargs)
@@ -74,12 +81,7 @@ class EmployerForm(forms.ModelForm):
         if instance:
             self.fields['user'].widget = forms.HiddenInput()    
         
-    def clean_diplome_employe(self):
-        file = self.cleaned_data.get('diplome_employe')
-        if file:
-            if file.size > 5 * 1024 * 1024:  # ne dois pas depasser 5 MB sinon une erreur est lever
-                raise forms.ValidationError("Le fichier est trop volumineux (max 5 MB).")
-        return file
+
         
 
 class  AbscenceForm(forms.ModelForm):

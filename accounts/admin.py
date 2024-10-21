@@ -22,14 +22,14 @@ class UserAdmin(BaseUserAdmin):
     list_per_page = 10
     labels = { 'first_name' : 'Prenom ', 'last_name' : 'Nom ', 'email' : 'Email ', 'password' : 'Mot de Passe' }
     fieldsets = (
-        (("Information Personnel"), {"fields": ("email", "first_name", "last_name", "password", 'profile_user',)}),
+        (("Information Personnel"), {"fields": ("email", "first_name", "last_name", "password", 'matricule' ,'profile_user',)}),
         (("Permissions"), {'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions',)}),
     )
     
     add_fieldsets = (
         (None, {
             'classes' : ('wide'),
-            'fields'  : ('email', 'first_name', 'last_name', 'password1', 'password2', 'is_staff', 'is_active', 'is_superuser')
+            'fields'  : ('email', 'first_name', 'last_name', 'matricule','password1', 'password2', 'is_staff', 'is_active', 'is_superuser')
         }),
     )
     # form = UserAdminChangeForm

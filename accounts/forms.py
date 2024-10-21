@@ -20,14 +20,14 @@ class UserRegister(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['profile_user','email', 'first_name', 'last_name', 'password' ]
+        fields = ['profile_user','email', 'first_name', 'last_name','matricule' , 'password' ]
         widgets = {
             'profile_user' : forms.FileInput(attrs={ 'class' : 'form-control'}),
             # 'email' : forms.TextInput()
             'email': forms.EmailInput(attrs={'placeholder': 'Email', 'class': 'form-control'}),
             'first_name': forms.TextInput(attrs={'placeholder': 'Prénom', 'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'placeholder': 'Nom', 'class': 'form-control'}),
-            
+            'matricule': forms.TextInput(attrs={'placeholder': 'Matricule', 'class': 'form-control'}),
         }
     
         def clean_email(self):

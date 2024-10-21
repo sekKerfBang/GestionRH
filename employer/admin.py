@@ -4,7 +4,7 @@ from .models import Employe, Abscence, Paiement
 @admin.register(Employe)
 class EmployeAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Information utilisateur', {'fields': ['name_employe', 'prenom_employe', 'date_naiss_employe', 'poste_employe', 'genre_employe', 'image_employe', 'diplome_employe', 'contrat_employe', 'service_employe', 'user']}),
+        ('Information utilisateur', {'fields': ['name_employe', 'prenom_employe', 'date_naiss_employe', 'poste_employe', 'genre_employe', 'image_employe', 'diplome_employe', 'contrat_employe', 'service_employe', 'user', 'matricule']}),
         ('Information Contact ', {'fields': ['tel_employe', 'adresse_employe', 'email_employe']}) 
         ]        
     list_display = ('name_employe', 'prenom_employe', 'date_naiss_employe', 'adresse_employe', 'email_employe', 'tel_employe', 'poste_employe', 'genre_employe', 'image_employe', 'diplome_employe', 'contrat_employe', 'service_employe')
